@@ -27,12 +27,13 @@ public class MainActivity extends AppCompatActivity {
 
         editText = findViewById(R.id.editText);
         textView = findViewById(R.id.textView);
+        urlStr = "https://api.themoviedb.org/3/movie/upcoming?api_key=e331a939fea1530cdc641ac98d848eee&language=ko-KR&page=4";
 
         Button button = findViewById(R.id.button);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                urlStr = editText.getText().toString();
+                //urlStr = editText.getText().toString();
                 RequestThread thread = new RequestThread();
                 thread.start();
             }

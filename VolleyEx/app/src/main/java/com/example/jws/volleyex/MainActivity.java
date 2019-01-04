@@ -45,7 +45,11 @@ public class MainActivity extends AppCompatActivity {
 
     public void sendRequest() {
         //String url = "http://www.google.co.kr";
-        String url = "http://www.kobis.or.kr/kobisopenapi/webservice/rest/boxoffice/searchDailyBoxOfficeList.json?key=430156241533f1d058c603178cc3ca0e&targetDt=20120101";
+        //String url = "https://api.themoviedb.org/3/discover/movie?api_key=e331a939fea1530cdc641ac98d848eee&language=ko-KR&page=1~10&sort_by=primary_release_date.desc&primary_release_date.lte=2006-11-25";
+        String url = "http://api.themoviedb.org/3/discover/movie?api_key=e331a939fea1530cdc641ac98d848eee&language=ko-KR&page=1&primary_release_date.gte=2018-01-01&primary_release_date.lte=2018-01-31&sort_by=primary_release_date.asc";
+
+
+
 
         StringRequest request = new StringRequest(
                 Request.Method.GET,// get / post 중 어떤방식?
