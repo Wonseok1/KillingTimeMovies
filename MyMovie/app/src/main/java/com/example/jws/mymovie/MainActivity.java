@@ -1,5 +1,8 @@
 package com.example.jws.mymovie;
 
+import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -8,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.GridView;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -20,6 +24,8 @@ import com.android.volley.toolbox.Volley;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -30,20 +36,30 @@ public class MainActivity extends AppCompatActivity {
     int total_pages;
     int a = 1;
     int b = 0;
+    Bitmap bitmap;
 
-   MovieListAdapter adapter;
-   GridView movie_main_list;
+    MovieListAdapter adapter;
+    GridView movie_main_list;
+
+    SQLiteDatabase database;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+
         movie_main_list = findViewById(R.id.movie_main_list);
-
         adapter = new MovieListAdapter();
-
         movie_main_list.setAdapter(adapter);
+
+        //DB 오픈 및 테이블 생성
+
+        database = openOrCreateDatabase("movie", MODE_PRIVATE, null);//DB오픈
+        if (database != null) {
+            database.execSQL("CREATE TABLE IF NOT EXISTS movieinfo (id integer PRIMARY KEY, title text)");
+            database.execSQL("CREATE TABLE IF NOT EXISTS imginfo(id integer PRIMARY KEY, img blob)");
+        }
 
         MovieTask task = new MovieTask();
         task.execute();
@@ -102,6 +118,7 @@ public class MainActivity extends AppCompatActivity {
             MovieListItem item = items.get(position);
             view.setTitle(item.getTitle());
             view.setScore(item.getVote_average());
+            view.setImage(item.getBitmap());
 
             return view;
         }
@@ -115,17 +132,17 @@ public class MainActivity extends AppCompatActivity {
         protected Void doInBackground(Void... voids) {
             //background 에서 동작하는 코드
             //publishProgress(); 실행시 밑의 update 호출됨
-
-
+            if (ApiInfo.requestQueue == null) {//requestQueue 생성
+                ApiInfo.requestQueue = Volley.newRequestQueue(getApplicationContext());
+            }
+            requestMovieList();
             return null;
         }
 
         @Override
         protected void onPostExecute(Void aVoid) {
-            if (ApiInfo.requestQueue == null) {//requestQueue 생성
-                ApiInfo.requestQueue = Volley.newRequestQueue(getApplicationContext());
-            }
-            requestMovieList();
+
+
 
             Toast.makeText(getApplicationContext(), "DB로딩완료", Toast.LENGTH_SHORT).show();
             super.onPostExecute(aVoid);
@@ -139,6 +156,8 @@ public class MainActivity extends AppCompatActivity {
 
 
     }
+
+
 
 
     public void requestMovieList() {
@@ -156,7 +175,7 @@ public class MainActivity extends AppCompatActivity {
 
                         //processResponse(response);
 
-                        for (int i = a; b < 3; i++) {
+                        for (int i = a; b < 2; i++) {
                             String url = ApiInfo.host + ApiInfo.apikey + ApiInfo.language ;
                             url += "&page=" + i;
                             url += ApiInfo.release_date_lte + ApiInfo.getTime + ApiInfo.sortdesc;
@@ -200,6 +219,13 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    public byte[] bitmapToByte(Bitmap bitmap) {
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+        byte[] byteArray = stream.toByteArray();
+        return byteArray;
+    }
+
     public void processResponse(String response) {
         json = response; //받아온 전체 데이터
         try {
@@ -221,7 +247,9 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-            for (int i = 0; i < total_pages; i++) {
+
+
+           for (int i = 0; i < total_pages; i++) {
                 //영화 상세정보 파싱
                 JSONObject movie_detail = new JSONObject(movie_info.getString(i));
                 int vote_count = movie_detail.getInt("vote_count");
@@ -234,8 +262,39 @@ public class MainActivity extends AppCompatActivity {
                 String overview = movie_detail.getString("overview");
                 String release_date = movie_detail.getString("release_date");
 
+                final String img_url = "https://image.tmdb.org/t/p/w500/"+poster_path;
 
-                adapter.addItem(new MovieListItem(title, vote_average));
+
+
+
+                new Thread(){
+                    @Override
+                    public void run() {
+                        try {
+                            URL url = new URL(img_url);
+                            bitmap = BitmapFactory.decodeStream(url.openConnection().getInputStream());
+
+                        } catch (Exception e) {
+
+                        }
+                    }
+                }.start();
+
+
+                //DB Insert
+               if (database != null) {
+                   String sql = "insert into movieinfo(id, title) values(?, ?)";
+                   Object[] params = {id, title};
+                   database.execSQL(sql, params);
+
+                   String sql2 = "insert into imginfo(id, img) values(?, ?)";
+                   Object[] params2 = {id, bitmapToByte(bitmap)};
+                   database.execSQL(sql2, params2);
+               }
+
+
+
+                adapter.addItem(new MovieListItem(title, vote_average, bitmap));//
                 adapter.notifyDataSetChanged();
                 // println("총 투표횟수 : " + vote_count);
                 // println("영화 id : " + id);
@@ -245,7 +304,8 @@ public class MainActivity extends AppCompatActivity {
                 //println("원어 : " + original_language);
                 //println("줄거리 : " + overview);
                 println("개봉일 : " + release_date);
-                // println("포스터 경로: "+poster_path);
+                println("포스터 경로: "+poster_path);
+
             }
 
 
@@ -262,6 +322,48 @@ public class MainActivity extends AppCompatActivity {
     //textView 에 출력
 
     //class MovieInfoTask extends  AsyncTask<>
+/*
+    public class ImageLoadTask extends AsyncTask<Void, Void, Bitmap> {
+
+        private String urlStr;
+        private ImageView imageView;
+
+        public ImageLoadTask(String urlStr, ImageView imageView) {
+            this.urlStr = urlStr;
+            this.imageView = imageView;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected Bitmap doInBackground(Void... voids) {
+
+            Bitmap bitmap = null;
+
+            try {
+                URL url = new URL(urlStr);
+                bitmap = BitmapFactory.decodeStream(url.openConnection().getInputStream());
+            } catch (Exception e) {
+            }
+            return bitmap;
+        }
+
+        @Override
+        protected void onProgressUpdate(Void... values) {
+            super.onProgressUpdate(values);
+        }
+
+        @Override
+        protected void onPostExecute(Bitmap bitmap) {
+            super.onPostExecute(bitmap);
+            imageView.setImageBitmap(bitmap);
+            imageView.invalidate();
+        }
+
+    }*/
 
 
 }
