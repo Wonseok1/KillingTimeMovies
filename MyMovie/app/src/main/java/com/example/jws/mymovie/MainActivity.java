@@ -4,7 +4,10 @@ import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.GridView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -17,6 +20,7 @@ import com.android.volley.toolbox.Volley;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.Date;
 
 public class MainActivity extends AppCompatActivity {
@@ -27,14 +31,23 @@ public class MainActivity extends AppCompatActivity {
     int a = 1;
     int b = 0;
 
+   MovieListAdapter adapter;
+   GridView movie_main_list;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        movie_main_list = findViewById(R.id.movie_main_list);
+
+        adapter = new MovieListAdapter();
+
+        movie_main_list.setAdapter(adapter);
+
         MovieTask task = new MovieTask();
         task.execute();
+
 
 
         textView = findViewById(R.id.textView);
@@ -51,6 +64,82 @@ public class MainActivity extends AppCompatActivity {
         });
 
     }
+
+    class MovieListAdapter extends BaseAdapter {
+
+        ArrayList<MovieListItem> items = new ArrayList<MovieListItem>();
+
+
+        @Override
+        public int getCount() {
+            return items.size();
+        }
+
+        @Override
+        public Object getItem(int position) {
+            return items.get(position);
+        }
+
+        public void addItem(MovieListItem item) {
+            items.add(item);
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return position;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            MovieListItemView view= null;
+
+            if (convertView == null) {
+                view = new MovieListItemView(getApplicationContext());
+            } else {
+                view = (MovieListItemView) convertView;
+            }
+
+            MovieListItem item = items.get(position);
+            view.setTitle(item.getTitle());
+            view.setScore(item.getVote_average());
+
+            return view;
+        }
+    }
+
+    //영화 정보 가져오는 AsynkTask
+    class MovieTask extends AsyncTask<Void, Void, Void> {//1 doinbackground 2 onprogressupdate 3 postexcute
+
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            //background 에서 동작하는 코드
+            //publishProgress(); 실행시 밑의 update 호출됨
+
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            if (ApiInfo.requestQueue == null) {//requestQueue 생성
+                ApiInfo.requestQueue = Volley.newRequestQueue(getApplicationContext());
+            }
+            requestMovieList();
+
+            Toast.makeText(getApplicationContext(), "DB로딩완료", Toast.LENGTH_SHORT).show();
+            super.onPostExecute(aVoid);
+        }
+
+        @Override
+        protected void onProgressUpdate(Void... values) {
+            super.onProgressUpdate(values);
+            adapter.notifyDataSetChanged();
+        }
+
+
+    }
+
 
     public void requestMovieList() {
         String url = ApiInfo.host + ApiInfo.apikey + ApiInfo.language;
@@ -107,34 +196,6 @@ public class MainActivity extends AppCompatActivity {
         request.setShouldCache(false);
         ApiInfo.requestQueue.add(request);
 
-       /* for(int i =1; i<total_pages; i++) {
-            url = ApiInfo.host + ApiInfo.apikey + ApiInfo.language;
-            url += "&page="+i;
-
-            StringRequest request2 = new StringRequest(
-                    Request.Method.GET,
-                    url,
-                    new Response.Listener<String>() {
-                        @Override
-                        public void onResponse(String response) {
-                            println("응답받음 -> "+response);
-
-                            processResponse(response);
-                        }
-                    },
-                    new Response.ErrorListener() {
-                        @Override
-                        public void onErrorResponse(VolleyError error) {
-                            println("에러발생 ->" + error.getMessage());
-                        }
-                    }
-            );
-
-            request2.setShouldCache(false);
-            ApiInfo.requestQueue.add(request2);
-        }*/
-
-
         println("영화목록요청보냄");
 
     }
@@ -159,6 +220,7 @@ public class MainActivity extends AppCompatActivity {
             //println("현재 페이지 영화수 :"+movie_list.length());
 
 
+
             for (int i = 0; i < total_pages; i++) {
                 //영화 상세정보 파싱
                 JSONObject movie_detail = new JSONObject(movie_info.getString(i));
@@ -172,6 +234,9 @@ public class MainActivity extends AppCompatActivity {
                 String overview = movie_detail.getString("overview");
                 String release_date = movie_detail.getString("release_date");
 
+
+                adapter.addItem(new MovieListItem(title, vote_average));
+                adapter.notifyDataSetChanged();
                 // println("총 투표횟수 : " + vote_count);
                 // println("영화 id : " + id);
                 //println("점수평균 :" + vote_average);
@@ -183,6 +248,8 @@ public class MainActivity extends AppCompatActivity {
                 // println("포스터 경로: "+poster_path);
             }
 
+
+
             //api 출력 형식이 {[{ 이런 식이여서 객체안에 배열안에 객체를 다시 생성하는 식으로로
 
         } catch (Exception e) {
@@ -192,33 +259,11 @@ public class MainActivity extends AppCompatActivity {
     public void println(String data) {
         textView.append(data + "\n");
     }
+    //textView 에 출력
 
-    //영화 정보 가져오는 AsynkTask
-    class MovieTask extends AsyncTask<String, Integer, Integer> {//1 doinbackground 2 onprogressupdate 3 postexcute
+    //class MovieInfoTask extends  AsyncTask<>
 
-        @Override
-        protected Integer doInBackground(String... strings) {
-            //background 에서 동작하는 코드
-            //publishProgress(); 실행시 밑의 update 호출됨
-            if (ApiInfo.requestQueue == null) {//requestQueue 생성
-                ApiInfo.requestQueue = Volley.newRequestQueue(getApplicationContext());
-            }
-            requestMovieList();
-            return null;
-        }
 
-        @Override
-        protected void onProgressUpdate(Integer... values) {
-            //중간중간 ui업데이트
-            super.onProgressUpdate(values);
-        }
-
-        @Override
-        protected void onPostExecute(Integer integer) {
-            Toast.makeText(getApplicationContext(), "DB로딩완료", Toast.LENGTH_SHORT).show();
-            super.onPostExecute(integer);
-        }
-    }
 }
 
 
