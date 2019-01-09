@@ -9,6 +9,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+
 /**
  * Created by student on 2019-01-08.
  */
@@ -16,7 +18,7 @@ import android.widget.TextView;
 public class MovieListItemView extends LinearLayout{
 
     TextView tv_movie_title;
-    TextView tv_movie_score;
+
     ImageView iv_movie_poster;
 
 
@@ -34,7 +36,6 @@ public class MovieListItemView extends LinearLayout{
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(context.LAYOUT_INFLATER_SERVICE);
         inflater.inflate(R.layout.movie_main_list, this, true);
 
-        tv_movie_score = findViewById(R.id.tv_movie_score);
         tv_movie_title = findViewById(R.id.tv_movie_title);
         iv_movie_poster = findViewById(R.id.iv_movie_poster);
 
@@ -44,13 +45,11 @@ public class MovieListItemView extends LinearLayout{
         tv_movie_title.setText(title);
     }
 
-    public void setScore(double score) {
-        tv_movie_score.setText(Double.toString(score));
 
-    }
+    public void setImage(String bitmap, Context context) {
 
-    public void setImage(Bitmap bitmap) {
-        iv_movie_poster.setImageBitmap(bitmap);
+        Glide.with(context).load(bitmap).into(iv_movie_poster);
+        //iv_movie_poster.setImageBitmap(bitmap);
 
     }
 

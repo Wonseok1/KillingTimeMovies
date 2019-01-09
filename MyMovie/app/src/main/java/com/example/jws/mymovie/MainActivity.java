@@ -1,5 +1,6 @@
 package com.example.jws.mymovie;
 
+import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -8,6 +9,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.GridView;
@@ -20,6 +22,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.bumptech.glide.Glide;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -38,6 +41,8 @@ public class MainActivity extends AppCompatActivity {
     int b = 0;
     Bitmap bitmap;
 
+
+
     MovieListAdapter adapter;
     GridView movie_main_list;
 
@@ -53,20 +58,22 @@ public class MainActivity extends AppCompatActivity {
         adapter = new MovieListAdapter();
         movie_main_list.setAdapter(adapter);
 
+
+
         //DB 오픈 및 테이블 생성
 
-        database = openOrCreateDatabase("movie", MODE_PRIVATE, null);//DB오픈
+        /*database = openOrCreateDatabase("movie", MODE_PRIVATE, null);//DB오픈
         if (database != null) {
             database.execSQL("CREATE TABLE IF NOT EXISTS movieinfo (id integer PRIMARY KEY, title text)");
             database.execSQL("CREATE TABLE IF NOT EXISTS imginfo(id integer PRIMARY KEY, img blob)");
-        }
+        }*/
 
         MovieTask task = new MovieTask();
         task.execute();
 
 
 
-        textView = findViewById(R.id.textView);
+        //textView = findViewById(R.id.textView);
         Button button = findViewById(R.id.button);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -78,6 +85,16 @@ public class MainActivity extends AppCompatActivity {
                 requestMovieList();
             }
         });
+
+        Button btn_famous = findViewById(R.id.btn_famous);
+        btn_famous.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                movie_main_list
+            }
+        });
+
+
 
     }
 
@@ -115,10 +132,33 @@ public class MainActivity extends AppCompatActivity {
                 view = (MovieListItemView) convertView;
             }
 
-            MovieListItem item = items.get(position);
+
+
+            final MovieListItem item = items.get(position);
             view.setTitle(item.getTitle());
-            view.setScore(item.getVote_average());
-            view.setImage(item.getBitmap());
+           // view.setScore(item.getVote_average());
+            view.setImage(item.getBitmap(),getApplicationContext());
+
+            movie_main_list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    Intent intent = new Intent(getApplicationContext(), MovieDetailActivity.class);
+
+                    MovieListItem item2 = items.get(position);
+
+                    intent.putExtra("vote_count", item2.getVote_count());
+                    intent.putExtra("id", item2.getId());
+                    intent.putExtra("vote_average", item2.getVote_average());
+                    intent.putExtra("title",item2.getTitle());
+                    intent.putExtra("original_title", item2.getOriginal_title());
+                    intent.putExtra("bitmap", item2.getBitmap());
+                    intent.putExtra("original_language", item2.getOriginal_language());
+                    intent.putExtra("overview", item2.getOverview());
+                    intent.putExtra("release_date", item2.getRelease_date());
+
+                    getApplicationContext().startActivity(intent);
+                }
+            });
 
             return view;
         }
@@ -171,7 +211,7 @@ public class MainActivity extends AppCompatActivity {
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        println(ApiInfo.getTime);
+                        //println(ApiInfo.getTime);
 
                         //processResponse(response);
 
@@ -194,7 +234,7 @@ public class MainActivity extends AppCompatActivity {
                                     new Response.ErrorListener() {
                                         @Override
                                         public void onErrorResponse(VolleyError error) {
-                                            println("에러발생 ->" + error.getMessage());
+                                            //println("에러발생 ->" + error.getMessage());
                                         }
                                     }
                             );
@@ -207,7 +247,7 @@ public class MainActivity extends AppCompatActivity {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        println("에러발생 ->" + error.getMessage());
+                        //println("에러발생 ->" + error.getMessage());
                     }
                 }
         );
@@ -215,16 +255,16 @@ public class MainActivity extends AppCompatActivity {
         request.setShouldCache(false);
         ApiInfo.requestQueue.add(request);
 
-        println("영화목록요청보냄");
+        //println("영화목록요청보냄");
 
     }
 
-    public byte[] bitmapToByte(Bitmap bitmap) {
+    /*public byte[] bitmapToByte(Bitmap bitmap) {
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
         byte[] byteArray = stream.toByteArray();
         return byteArray;
-    }
+    }*/
 
     public void processResponse(String response) {
         json = response; //받아온 전체 데이터
@@ -240,14 +280,10 @@ public class MainActivity extends AppCompatActivity {
             //영화 검색결과 파싱
             JSONArray movie_info = new JSONArray(movie_list.toString());
 
-            println("현재페이지 : " + page);
+            //println("현재페이지 : " + page);
             //println("총 검색 영화수 : " + total_results);
             //println("총페이지 : " + total_pages);
             //println("현재 페이지 영화수 :"+movie_list.length());
-
-
-
-
 
            for (int i = 0; i < total_pages; i++) {
                 //영화 상세정보 파싱
@@ -261,13 +297,13 @@ public class MainActivity extends AppCompatActivity {
                 String original_language = movie_detail.getString("original_language");
                 String overview = movie_detail.getString("overview");
                 String release_date = movie_detail.getString("release_date");
+               String original_title = movie_detail.getString("original_title");
 
                 final String img_url = "https://image.tmdb.org/t/p/w500/"+poster_path;
 
 
 
-
-                new Thread(){
+               /* new Thread(){
                     @Override
                     public void run() {
                         try {
@@ -278,33 +314,33 @@ public class MainActivity extends AppCompatActivity {
 
                         }
                     }
-                }.start();
+                }.start();*/
 
 
-                //DB Insert
+                /*//DB Insert
                if (database != null) {
                    String sql = "insert into movieinfo(id, title) values(?, ?)";
                    Object[] params = {id, title};
                    database.execSQL(sql, params);
 
                    String sql2 = "insert into imginfo(id, img) values(?, ?)";
-                   Object[] params2 = {id, bitmapToByte(bitmap)};
-                   database.execSQL(sql2, params2);
-               }
+                   //Object[] params2 = {id, bitmapToByte(bitmap)};
+                   //database.execSQL(sql2, params2);
+               }*/
 
 
 
-                adapter.addItem(new MovieListItem(title, vote_average, bitmap));//
+                adapter.addItem(new MovieListItem(vote_count, id, vote_average, title, img_url,original_language, overview, release_date, original_title ));//
                 adapter.notifyDataSetChanged();
                 // println("총 투표횟수 : " + vote_count);
                 // println("영화 id : " + id);
                 //println("점수평균 :" + vote_average);
-                println("제목 :" + title);
+                //println("제목 :" + title);
                 // println("관람횟수 : " + popularity);
                 //println("원어 : " + original_language);
                 //println("줄거리 : " + overview);
-                println("개봉일 : " + release_date);
-                println("포스터 경로: "+poster_path);
+                //println("개봉일 : " + release_date);
+                //println("포스터 경로: "+poster_path);
 
             }
 

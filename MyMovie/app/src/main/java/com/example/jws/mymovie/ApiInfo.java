@@ -7,6 +7,7 @@ import java.util.Date;
 
 /**
  http://api.themoviedb.org/3/discover/movie?api_key=e331a939fea1530cdc641ac98d848eee
+ https://api.themoviedb.org/3/movie/upcoming?api_key=e331a939fea1530cdc641ac98d848eee&language=ko-KR&page=1
  &language=ko-KR&page=1&primary_release_date.gte=2018-01-01&primary_release_date.lte=2018-01-31&sort_by=primary_release_date.asc";
  //http://api.themoviedb.org/3/discover/movie?api_key=e331a939fea1530cdc641ac98d848eee&language=ko-KR&page=1&primary_release_date.lte=2018-01-31&sort_by=primary_release_date.asc&region=KR
  https://image.tmdb.org/t/p/w500/kqjL17yufvn9OVLyXYpvtyrFfak.jpg
