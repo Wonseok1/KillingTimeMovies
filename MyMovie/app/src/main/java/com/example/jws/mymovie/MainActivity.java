@@ -186,7 +186,7 @@ public class MainActivity extends AppCompatActivity {
                 b2 = 0;
                 String search;
                 search = editText.getText().toString();
-                //https://api.themoviedb.org/3/search/movie?api_key=<your key>&query=<영화제목>&language=ko-KR&page=1
+                //https://api.themoviedb.org/3/search/movie?api_key=<your key>&query=<search>&language=ko-KR&page=1
                 for (i2 = a2; b2 < 2; i2++) {
                     b2++;
                     a2++;
@@ -274,9 +274,11 @@ public class MainActivity extends AppCompatActivity {
             //requestMovieList2();
             for (i1 = a1; b1 < 2; i1++) {
                 b1++;
+                a1++;
                 String url = "https://api.themoviedb.org/3/movie/upcoming?api_key=e331a939fea1530cdc641ac98d848eee&language=ko-KR";
                 url += "&page=" + i1;
                 requestMovieList3(url);
+
             }
             return null;
         }
