@@ -40,6 +40,10 @@ public class MainActivity extends AppCompatActivity {
     int a = 1;
     int b = 0;
     Bitmap bitmap;
+    int Movie_tab = 1;
+
+    int a1 = 1;
+    int b1 = 0;
 
 
 
@@ -78,11 +82,22 @@ public class MainActivity extends AppCompatActivity {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                //무비 탭이 0이면 requestMovieList 1을 실행
+                //1이면 2를 실행( 인기영화)
+                //최신영화로 가면 a랑 b초기화되고 다시
                 b = 0;
+
                 if (ApiInfo.requestQueue == null) {//requestQueue 생성
                     ApiInfo.requestQueue = Volley.newRequestQueue(getApplicationContext());
                 }
-                requestMovieList();
+
+                if (Movie_tab == 0) {
+                    requestMovieList();
+                } else if (Movie_tab ==1) {
+                    b1=0;
+                    requestMovieList2();
+                }
+
             }
         });
 
@@ -90,7 +105,33 @@ public class MainActivity extends AppCompatActivity {
         btn_famous.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                movie_main_list
+                Movie_tab = 1;
+
+                //어댑터 목록 삭제제
+                adapter = new MovieListAdapter();
+                movie_main_list.setAdapter(adapter);
+                a1=1;
+                b1=0;
+
+                /*if (ApiInfo.requestQueue == null) {//requestQueue 생성
+                    ApiInfo.requestQueue = Volley.newRequestQueue(getApplicationContext());
+                }*/
+
+                requestMovieList2();
+            }
+        });
+
+        Button btn_latest = findViewById(R.id.btn_latest);
+        btn_latest.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Movie_tab = 0;
+                adapter = new MovieListAdapter();
+                movie_main_list.setAdapter(adapter);
+                a=1;
+                b=0;
+
+                requestMovieList();
             }
         });
 
@@ -139,6 +180,7 @@ public class MainActivity extends AppCompatActivity {
            // view.setScore(item.getVote_average());
             view.setImage(item.getBitmap(),getApplicationContext());
 
+
             movie_main_list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -175,7 +217,7 @@ public class MainActivity extends AppCompatActivity {
             if (ApiInfo.requestQueue == null) {//requestQueue 생성
                 ApiInfo.requestQueue = Volley.newRequestQueue(getApplicationContext());
             }
-            requestMovieList();
+            requestMovieList2();
             return null;
         }
 
@@ -193,11 +235,7 @@ public class MainActivity extends AppCompatActivity {
             super.onProgressUpdate(values);
             adapter.notifyDataSetChanged();
         }
-
-
     }
-
-
 
 
     public void requestMovieList() {
@@ -211,9 +249,6 @@ public class MainActivity extends AppCompatActivity {
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        //println(ApiInfo.getTime);
-
-                        //processResponse(response);
 
                         for (int i = a; b < 2; i++) {
                             String url = ApiInfo.host + ApiInfo.apikey + ApiInfo.language ;
@@ -221,6 +256,64 @@ public class MainActivity extends AppCompatActivity {
                             url += ApiInfo.release_date_lte + ApiInfo.getTime + ApiInfo.sortdesc;
                             b++;
                             a++;
+
+                            StringRequest request2 = new StringRequest(
+                                    Request.Method.GET,
+                                    url,
+                                    new Response.Listener<String>() {
+                                        @Override
+                                        public void onResponse(String response) {
+                                            processResponse(response);
+                                        }
+                                    },
+                                    new Response.ErrorListener() {
+                                        @Override
+                                        public void onErrorResponse(VolleyError error) {
+                                            //println("에러발생 ->" + error.getMessage());
+                                        }
+                                    }
+                            );
+
+                            request2.setShouldCache(false);
+                            ApiInfo.requestQueue.add(request2);
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        //println("에러발생 ->" + error.getMessage());
+                    }
+                }
+        );
+
+        request.setShouldCache(false);
+        ApiInfo.requestQueue.add(request);
+
+        //println("영화목록요청보냄");
+
+    }
+
+    public void requestMovieList2() {
+        //https://api.themoviedb.org/3/movie/upcoming?api_key=e331a939fea1530cdc641ac98d848eee&language=ko-KR&page=1
+        String url = "https://api.themoviedb.org/3/movie/upcoming?api_key=e331a939fea1530cdc641ac98d848eee&language=ko-KR&page=1";
+
+        StringRequest request = new StringRequest(
+                Request.Method.GET,
+                url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        //println(ApiInfo.getTime);
+
+                        //processResponse(response);
+
+                        for (int i = a1; b1 < 2; i++) {
+                            String url = "https://api.themoviedb.org/3/movie/upcoming?api_key=e331a939fea1530cdc641ac98d848eee&language=ko-KR";
+                            url += "&page=" + i;
+                            //url += ApiInfo.release_date_lte + ApiInfo.getTime + ApiInfo.sortdesc;
+                            b1++;
+                            a1++;
 
                             StringRequest request2 = new StringRequest(
                                     Request.Method.GET,
@@ -302,52 +395,10 @@ public class MainActivity extends AppCompatActivity {
                 final String img_url = "https://image.tmdb.org/t/p/w500/"+poster_path;
 
 
-
-               /* new Thread(){
-                    @Override
-                    public void run() {
-                        try {
-                            URL url = new URL(img_url);
-                            bitmap = BitmapFactory.decodeStream(url.openConnection().getInputStream());
-
-                        } catch (Exception e) {
-
-                        }
-                    }
-                }.start();*/
-
-
-                /*//DB Insert
-               if (database != null) {
-                   String sql = "insert into movieinfo(id, title) values(?, ?)";
-                   Object[] params = {id, title};
-                   database.execSQL(sql, params);
-
-                   String sql2 = "insert into imginfo(id, img) values(?, ?)";
-                   //Object[] params2 = {id, bitmapToByte(bitmap)};
-                   //database.execSQL(sql2, params2);
-               }*/
-
-
-
                 adapter.addItem(new MovieListItem(vote_count, id, vote_average, title, img_url,original_language, overview, release_date, original_title ));//
                 adapter.notifyDataSetChanged();
-                // println("총 투표횟수 : " + vote_count);
-                // println("영화 id : " + id);
-                //println("점수평균 :" + vote_average);
-                //println("제목 :" + title);
-                // println("관람횟수 : " + popularity);
-                //println("원어 : " + original_language);
-                //println("줄거리 : " + overview);
-                //println("개봉일 : " + release_date);
-                //println("포스터 경로: "+poster_path);
-
             }
-
-
-
             //api 출력 형식이 {[{ 이런 식이여서 객체안에 배열안에 객체를 다시 생성하는 식으로로
-
         } catch (Exception e) {
         }
     }
@@ -357,49 +408,6 @@ public class MainActivity extends AppCompatActivity {
     }
     //textView 에 출력
 
-    //class MovieInfoTask extends  AsyncTask<>
-/*
-    public class ImageLoadTask extends AsyncTask<Void, Void, Bitmap> {
-
-        private String urlStr;
-        private ImageView imageView;
-
-        public ImageLoadTask(String urlStr, ImageView imageView) {
-            this.urlStr = urlStr;
-            this.imageView = imageView;
-        }
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-        }
-
-        @Override
-        protected Bitmap doInBackground(Void... voids) {
-
-            Bitmap bitmap = null;
-
-            try {
-                URL url = new URL(urlStr);
-                bitmap = BitmapFactory.decodeStream(url.openConnection().getInputStream());
-            } catch (Exception e) {
-            }
-            return bitmap;
-        }
-
-        @Override
-        protected void onProgressUpdate(Void... values) {
-            super.onProgressUpdate(values);
-        }
-
-        @Override
-        protected void onPostExecute(Bitmap bitmap) {
-            super.onPostExecute(bitmap);
-            imageView.setImageBitmap(bitmap);
-            imageView.invalidate();
-        }
-
-    }*/
 
 
 }
