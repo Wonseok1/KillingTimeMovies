@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -37,15 +38,19 @@ public class MainActivity extends AppCompatActivity {
     TextView textView;
     String json;
     int total_pages;
-    int a = 1;
-    int b = 0;
     Bitmap bitmap;
     int Movie_tab = 1;
+    EditText editText;
 
+    int a = 1;
+    int b = 0;
     int a1 = 1;
     int b1 = 0;
     int i1;
     int i;
+    int i2;
+    int a2 = 1;
+    int b2 = 0;
 
 
     MovieListAdapter adapter;
@@ -61,6 +66,7 @@ public class MainActivity extends AppCompatActivity {
         movie_main_list = findViewById(R.id.movie_main_list);
         adapter = new MovieListAdapter();
         movie_main_list.setAdapter(adapter);
+        editText = findViewById(R.id.editText);
 
         MovieTask task = new MovieTask();
         task.execute();
@@ -82,7 +88,7 @@ public class MainActivity extends AppCompatActivity {
                 if (Movie_tab == 0) {
                     //requestMovieList();
 
-                    for(i=a; b<2; i++) {
+                    for (i = a; b < 2; i++) {
                         b++;
                         a++;
                         String url = ApiInfo.host + ApiInfo.apikey + ApiInfo.language;
@@ -100,6 +106,18 @@ public class MainActivity extends AppCompatActivity {
                         a1++;
                         String url = "https://api.themoviedb.org/3/movie/upcoming?api_key=e331a939fea1530cdc641ac98d848eee&language=ko-KR";
                         url += "&page=" + i1;
+                        requestMovieList3(url);
+                    }
+                } else if (Movie_tab == 2) {
+                    b2 = 0;
+                    for (i2 = a2; b2 < 2; i2++) {
+                        b2++;
+                        a2++;
+                        String search;
+                        search = editText.getText().toString();
+                        String url = "https://api.themoviedb.org/3/search/movie?api_key=e331a939fea1530cdc641ac98d848eee&query=" + search;
+                        url += "&language=ko-KR&page=" + i2;
+
                         requestMovieList3(url);
                     }
                 }
@@ -144,7 +162,7 @@ public class MainActivity extends AppCompatActivity {
                 a = 1;
                 b = 0;
 
-                for(i=a; b<2; i++) {
+                for (i = a; b < 2; i++) {
                     b++;
                     a++;
                     String url = ApiInfo.host + ApiInfo.apikey + ApiInfo.language;
@@ -154,6 +172,29 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 //requestMovieList();
+            }
+        });
+
+        Button btn_search = findViewById(R.id.btn_search);
+        btn_search.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                adapter = new MovieListAdapter();
+                movie_main_list.setAdapter(adapter);
+                Movie_tab = 2;
+                a2 = 1;
+                b2 = 0;
+                String search;
+                search = editText.getText().toString();
+                //https://api.themoviedb.org/3/search/movie?api_key=<your key>&query=<영화제목>&language=ko-KR&page=1
+                for (i2 = a2; b2 < 2; i2++) {
+                    b2++;
+                    a2++;
+                    String url = "https://api.themoviedb.org/3/search/movie?api_key=e331a939fea1530cdc641ac98d848eee&query=" + search;
+                    url += "&language=ko-KR&page=" + i2;
+
+                    requestMovieList3(url);
+                }
             }
         });
 
@@ -252,8 +293,6 @@ public class MainActivity extends AppCompatActivity {
             adapter.notifyDataSetChanged();
         }
     }
-
-
 
 
     public void requestMovieList3(String url) {
