@@ -1,5 +1,6 @@
 package com.example.jws.mymovie;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
@@ -264,6 +265,17 @@ public class MainActivity extends AppCompatActivity {
     //영화 정보 가져오는 AsynkTask
     class MovieTask extends AsyncTask<Void, Void, Void> {//1 doinbackground 2 onprogressupdate 3 postexcute
 
+        ProgressDialog loadingDialog = new ProgressDialog(MainActivity.this);
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            loadingDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            loadingDialog.setMessage("영화정보 로딩중입니다..");
+            loadingDialog.show();
+
+        }
+
         @Override
         protected Void doInBackground(Void... voids) {
             //background 에서 동작하는 코드
@@ -287,6 +299,7 @@ public class MainActivity extends AppCompatActivity {
         protected void onPostExecute(Void aVoid) {
             Toast.makeText(getApplicationContext(), "DB로딩완료", Toast.LENGTH_SHORT).show();
             super.onPostExecute(aVoid);
+            loadingDialog.dismiss();
         }
 
         @Override
@@ -294,6 +307,8 @@ public class MainActivity extends AppCompatActivity {
             super.onProgressUpdate(values);
             adapter.notifyDataSetChanged();
         }
+
+
     }
 
 
@@ -334,11 +349,7 @@ public class MainActivity extends AppCompatActivity {
             //영화 검색결과 파싱
             JSONArray movie_info = new JSONArray(movie_list.toString());
 
-            //println("현재페이지 : " + page);
-            //println("총 검색 영화수 : " + total_results);
-            //println("총페이지 : " + total_pages);
-            //println("현재 페이지 영화수 :"+movie_list.length());
-
+            //api 출력 형식이 {[{ 이런 식이여서 객체안에 배열안에 객체를 다시 생성하는 식으로로
             for (int i = 0; i < total_pages; i++) {
                 //영화 상세정보 파싱
                 JSONObject movie_detail = new JSONObject(movie_info.getString(i));
@@ -358,7 +369,7 @@ public class MainActivity extends AppCompatActivity {
                 adapter.addItem(new MovieListItem(vote_count, id, vote_average, title, img_url, original_language, overview, release_date, original_title));//
                 adapter.notifyDataSetChanged();
             }
-            //api 출력 형식이 {[{ 이런 식이여서 객체안에 배열안에 객체를 다시 생성하는 식으로로
+
         } catch (Exception e) {
         }
     }
