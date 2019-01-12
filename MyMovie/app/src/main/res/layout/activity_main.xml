@@ -6,6 +6,69 @@
     android:orientation="vertical"
     tools:context="com.example.jws.mymovie.MainActivity">
 
+
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:layout_weight="7"
+        android:background="#FF000000"
+        >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btn_famous"
+            android:layout_width="130dp"
+            android:layout_height="wrap_content"
+            android:background="@drawable/notselected"
+            android:text="인기영화"
+            android:textColor="#FFFFFF"
+            android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/btn_latest"
+            android:layout_width="130dp"
+            android:layout_height="wrap_content"
+            android:background="@drawable/notselected"
+            android:text="최신영화"
+            android:textColor="#FFFFFF"
+            android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/btn_killing"
+            android:layout_width="130dp"
+            android:layout_height="wrap_content"
+            android:background="@drawable/notselected"
+            android:text="킬링타임"
+            android:textColor="#FFFFFF"
+            android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/btn_popular"
+            android:layout_width="130dp"
+            android:layout_height="wrap_content"
+            android:background="@drawable/notselected"
+            android:text="화제의영화"
+            android:textColor="#FFFFFF"
+            android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/btn_killing3"
+            android:layout_width="130dp"
+            android:layout_height="wrap_content"
+            android:background="@drawable/notselected"
+            android:text="킬링타임"
+            android:textColor="#FFFFFF"
+            android:textStyle="bold" />
+
+    </LinearLayout>
+
+    </HorizontalScrollView>
+
     <GridView
         android:background="#FF000000"
         android:id="@+id/movie_main_list"
@@ -21,52 +84,38 @@
         android:orientation="horizontal"
         android:focusable="true"
         android:focusableInTouchMode="true"
+        android:background="#FF000000"
         android:layout_weight="7">
 
         <EditText
+            android:layout_marginLeft="10dp"
             android:id="@+id/editText"
+            android:shadowColor="#FFFFFFFF"
+            android:textColorHint="#FFFFFFFF"
+            android:hint="검색할 영화제목을 입력하세요"
             android:layout_width="match_parent"
-            android:layout_weight="1"
+            android:textColor="#FFFFFFFF"
+            android:layout_weight="2"
             android:layout_height="wrap_content" />
         <Button
             android:id="@+id/btn_search"
             android:layout_width="match_parent"
-            android:layout_weight="4"
+            android:layout_weight="3"
             android:layout_height="wrap_content"
+            android:textColor="#FFFFFF"
+            android:textStyle="bold"
+            android:background="@drawable/btn_not_clicked"
             android:text="검색"/>
-    </LinearLayout>
-
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="horizontal"
-        android:layout_gravity="center"
-        android:gravity="center"
-        android:layout_weight="7">
-
-
-        <Button
-            android:id="@+id/btn_famous"
-            android:layout_width="match_parent"
-            android:layout_weight="1"
-            android:layout_height="wrap_content"
-            android:text="인기영화" />
-
-        <Button
-            android:id="@+id/btn_latest"
-            android:layout_width="match_parent"
-            android:layout_weight="1"
-            android:layout_height="wrap_content"
-            android:text="최신영화" />
 
         <Button
             android:id="@+id/button"
             android:layout_width="match_parent"
-            android:layout_weight="1"
             android:layout_height="wrap_content"
+            android:layout_weight="3"
+            android:textColor="#FFFFFF"
+            android:textStyle="bold"
+            android:background="@drawable/btn_not_clicked"
             android:text="추가" />
-
     </LinearLayout>
 
 

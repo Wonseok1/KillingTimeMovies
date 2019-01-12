@@ -1,11 +1,15 @@
 package com.example.jws.mymovie;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
+import android.os.Handler;
+import android.os.HandlerThread;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -44,15 +48,28 @@ public class MainActivity extends AppCompatActivity {
     EditText editText;
 
     int a = 1;
-    int b = 0;
     int a1 = 1;
-    int b1 = 0;
-    int i1;
-    int i;
-    int i2;
     int a2 = 1;
-    int b2 = 0;
+    int a3 = 1;
+    int a4 = 1;
 
+    int b = 0;
+    int b1 = 0;
+    int b2 = 0;
+    int b3 = 0;
+    int b4 = 0;
+
+    int i;
+    int i1;
+    int i2;
+    int i3;
+    int i4;
+
+    Button btn_famous;
+    Button btn_latest;
+    Button btn_search;
+    Button btn_killing;
+    Button btn_popular;
 
     MovieListAdapter adapter;
     GridView movie_main_list;
@@ -72,14 +89,17 @@ public class MainActivity extends AppCompatActivity {
         MovieTask task = new MovieTask();
         task.execute();
 
+        final Handler handler = new Handler();
+
         //textView = findViewById(R.id.textView);
-        Button button = findViewById(R.id.button);
+        final Button button = findViewById(R.id.button);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 //무비 탭이 0이면 requestMovieList 1을 실행
                 //1이면 2를 실행( 인기영화)
                 //최신영화로 가면 a랑 b초기화되고 다시
+
                 b = 0;
 
                 if (ApiInfo.requestQueue == null) {//requestQueue 생성
@@ -121,26 +141,49 @@ public class MainActivity extends AppCompatActivity {
 
                         requestMovieList3(url);
                     }
+                } else if (Movie_tab == 3) {
+                    b3 = 0;
+                    for (i3 = a3; b3 < 2; i3++) {
+                        b3++;
+                        a3++;
+                        String url = ApiInfo.host + ApiInfo.apikey + ApiInfo.language;
+                        url += "&page=" + i3;
+                        url += ApiInfo.release_date_lte + ApiInfo.getTime3Month + ApiInfo.sortdesc;
+                        requestMovieList3(url);
+                    }
+                } else if (Movie_tab == 4) {
+                    Toast.makeText(getApplicationContext(), "화제의 영화는 현재 언론의 화제가 되는 20개의 영화만 보여줍니다.", Toast.LENGTH_LONG).show();
                 }
 
             }
         });
 
-        Button btn_famous = findViewById(R.id.btn_famous);
+        btn_famous = findViewById(R.id.btn_famous);
         btn_famous.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Movie_tab = 1;
+
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        handler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                btn_famous.setBackgroundDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.btn_selected2));
+                                btn_latest.setBackgroundDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.btn_not_clicked));
+                                btn_search.setBackgroundDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.btn_not_clicked));
+                                btn_killing.setBackgroundDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.btn_not_clicked));
+                            }
+                        });
+                    }
+                }).start();
 
                 //어댑터 목록 삭제제
                 adapter = new MovieListAdapter();
                 movie_main_list.setAdapter(adapter);
                 a1 = 1;
                 b1 = 0;
-
-                /*if (ApiInfo.requestQueue == null) {//requestQueue 생성
-                    ApiInfo.requestQueue = Volley.newRequestQueue(getApplicationContext());
-                }*/
 
                 for (i1 = a1; b1 < 2; i1++) {
                     b1++;
@@ -149,14 +192,29 @@ public class MainActivity extends AppCompatActivity {
                     url += "&page=" + i1;
                     requestMovieList3(url);
                 }
-                //requestMovieList2();
             }
         });
 
-        Button btn_latest = findViewById(R.id.btn_latest);
+        btn_latest = findViewById(R.id.btn_latest);
         btn_latest.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        handler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                btn_famous.setBackgroundDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.btn_not_clicked));
+                                btn_latest.setBackgroundDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.btn_selected2));
+                                btn_search.setBackgroundDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.btn_not_clicked));
+                                btn_killing.setBackgroundDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.btn_not_clicked));
+                            }
+                        });
+                    }
+                }).start();
+
                 Movie_tab = 0;
                 adapter = new MovieListAdapter();
                 movie_main_list.setAdapter(adapter);
@@ -171,15 +229,29 @@ public class MainActivity extends AppCompatActivity {
                     url += ApiInfo.release_date_lte + ApiInfo.getTime + ApiInfo.sortdesc;
                     requestMovieList3(url);
                 }
-
-                //requestMovieList();
             }
         });
 
-        Button btn_search = findViewById(R.id.btn_search);
+        btn_search = findViewById(R.id.btn_search);
         btn_search.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        handler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                btn_famous.setBackgroundDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.btn_not_clicked));
+                                btn_latest.setBackgroundDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.btn_not_clicked));
+                                btn_search.setBackgroundDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.btn_selected2));
+                                btn_killing.setBackgroundDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.btn_not_clicked));
+                            }
+                        });
+                    }
+                }).start();
+
                 adapter = new MovieListAdapter();
                 movie_main_list.setAdapter(adapter);
                 Movie_tab = 2;
@@ -193,9 +265,77 @@ public class MainActivity extends AppCompatActivity {
                     a2++;
                     String url = "https://api.themoviedb.org/3/search/movie?api_key=e331a939fea1530cdc641ac98d848eee&query=" + search;
                     url += "&language=ko-KR&page=" + i2;
-
                     requestMovieList3(url);
                 }
+            }
+        });
+
+        btn_killing = findViewById(R.id.btn_killing);
+        btn_killing.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                Movie_tab = 3;
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        handler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                btn_famous.setBackgroundDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.btn_not_clicked));
+                                btn_latest.setBackgroundDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.btn_not_clicked));
+                                btn_search.setBackgroundDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.btn_not_clicked));
+                                btn_killing.setBackgroundDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.btn_selected2));
+                                btn_popular.setBackgroundDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.btn_not_clicked));
+                            }
+                        });
+                    }
+                }).start();
+
+                adapter = new MovieListAdapter();
+                movie_main_list.setAdapter(adapter);
+                a3 = 1;
+                b3 = 0;
+
+                for (i3 = a3; b3 < 2; i3++) {
+                    b3++;
+                    a3++;
+                    String url = ApiInfo.host + ApiInfo.apikey + ApiInfo.language;
+                    url += "&page=" + i3;
+                    url += ApiInfo.release_date_lte + ApiInfo.getTime3Month + ApiInfo.sortdesc;
+                    requestMovieList3(url);
+                }
+            }
+        });
+
+        btn_popular = findViewById(R.id.btn_popular);
+        btn_popular.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                Movie_tab = 4;
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        handler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                btn_famous.setBackgroundDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.btn_not_clicked));
+                                btn_latest.setBackgroundDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.btn_not_clicked));
+                                btn_search.setBackgroundDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.btn_not_clicked));
+                                btn_killing.setBackgroundDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.btn_not_clicked));
+                                btn_popular.setBackgroundDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.btn_selected2));
+                            }
+                        });
+                    }
+                }).start();
+
+                adapter = new MovieListAdapter();
+                movie_main_list.setAdapter(adapter);
+
+                    String url = ApiInfo.host + ApiInfo.apikey + ApiInfo.language + "&sort_by=popularity.desc";
+                    requestMovieList3(url);
+
             }
         });
 
@@ -235,9 +375,9 @@ public class MainActivity extends AppCompatActivity {
                 view = (MovieListItemView) convertView;
             }
 
+            //여기에 db로 if문 생성
             final MovieListItem item = items.get(position);
             view.setTitle(item.getTitle());
-            // view.setScore(item.getVote_average());
             view.setImage(item.getBitmap(), getApplicationContext());
 
             movie_main_list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -292,6 +432,7 @@ public class MainActivity extends AppCompatActivity {
                 requestMovieList3(url);
 
             }
+            loadingDialog.show();
             return null;
         }
 

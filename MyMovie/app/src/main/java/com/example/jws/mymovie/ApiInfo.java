@@ -3,6 +3,7 @@ package com.example.jws.mymovie;
 import com.android.volley.RequestQueue;
 
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
 /**
@@ -26,7 +27,18 @@ public class ApiInfo {
     public static String sortdesc = "&sort_by=primary_release_date.desc";
     public static String region = "&region=KR";
 
+
     public static Date date = new Date(System.currentTimeMillis());
     public static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
     public static String getTime = sdf.format(date);
+    public static String getTime3Month = sdf.format(month(date, -3));
+
+    public static Date month(Date date, int months) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        cal.add(Calendar.MONTH, months);
+        return cal.getTime();
+    }
+
+
 }
