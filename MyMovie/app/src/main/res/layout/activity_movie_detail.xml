@@ -86,22 +86,35 @@
             android:layout_height="wrap_content" />
 
         <Button
-            android:id="@+id/btn_detail_similar"
-            android:background="@drawable/btn_not_clicked"
-            android:text="비슷한 영화"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
-        <Button
+            android:layout_margin="5dp"
             android:id="@+id/btn_detail_internet"
-            android:background="@drawable/btn_not_clicked"
+            android:background="@drawable/btn_detail"
             android:text="인터넷 검색"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
+        <Button
+            android:layout_margin="5dp"
+            android:id="@+id/btn_detail_similar"
+            android:background="@drawable/btn_detail"
+            android:text="비슷한 영화"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <GridView
+            android:id="@+id/list_movie_similar"
+            android:layout_width="match_parent"
+            android:layout_height="300dp"
+            android:numColumns="2">
+
+        </GridView>
 
 
     </LinearLayout>
+
+
 </ScrollView>
+
+
 
 </LinearLayout>

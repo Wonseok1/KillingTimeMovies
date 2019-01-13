@@ -3,6 +3,7 @@ package com.example.jws.mymovie;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -75,19 +76,29 @@ public class MainActivity extends AppCompatActivity {
     GridView movie_main_list;
 
     SQLiteDatabase database;
+    public static Context context;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        MainActivity.context = getApplicationContext();
 
         movie_main_list = findViewById(R.id.movie_main_list);
         adapter = new MovieListAdapter();
         movie_main_list.setAdapter(adapter);
         editText = findViewById(R.id.editText);
 
+/*
+        String tableName = "movie";
+        database = openOrCreateDatabase(tableName, MODE_PRIVATE, null);
+        database.execSQL("drop table movie"); //나중에 바꿔야돼
+        database.execSQL("create table if not exists " + tableName + " (id integer, seen integer)");
+*/
+
         MovieTask task = new MovieTask();
         task.execute();
+
 
         final Handler handler = new Handler();
 
@@ -333,11 +344,12 @@ public class MainActivity extends AppCompatActivity {
                 adapter = new MovieListAdapter();
                 movie_main_list.setAdapter(adapter);
 
-                    String url = ApiInfo.host + ApiInfo.apikey + ApiInfo.language + "&sort_by=popularity.desc";
-                    requestMovieList3(url);
+                String url = ApiInfo.host + ApiInfo.apikey + ApiInfo.language + "&sort_by=popularity.desc";
+                requestMovieList3(url);
 
             }
         });
+
 
 
     }
@@ -375,35 +387,55 @@ public class MainActivity extends AppCompatActivity {
                 view = (MovieListItemView) convertView;
             }
 
-            //여기에 db로 if문 생성
             final MovieListItem item = items.get(position);
-            view.setTitle(item.getTitle());
-            view.setImage(item.getBitmap(), getApplicationContext());
+            //여기에 db로 if문 생성
+            /*Cursor cursor = database.rawQuery("select id, seen from movie where id ="+item.getId() , null);
+            cursor.moveToNext();
+            int id = cursor.getInt(0);
+            int cursorSeen = cursor.getInt(1);*/
 
-            movie_main_list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            movie_main_list.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
                 @Override
-                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    Intent intent = new Intent(getApplicationContext(), MovieDetailActivity.class);
-                    MovieListItem item2 = items.get(position);
+                public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
+                    //MovieListItem item = items.get(i);
+                    //database.execSQL("update movie set seen=1 where id="+item.getId());
+                    items.remove(i);
+                    adapter.notifyDataSetChanged();
 
-                    intent.putExtra("vote_count", item2.getVote_count());
-                    intent.putExtra("id", item2.getId());
-                    intent.putExtra("vote_average", item2.getVote_average());
-                    intent.putExtra("title", item2.getTitle());
-                    intent.putExtra("original_title", item2.getOriginal_title());
-                    intent.putExtra("bitmap", item2.getBitmap());
-                    intent.putExtra("original_language", item2.getOriginal_language());
-                    intent.putExtra("overview", item2.getOverview());
-                    intent.putExtra("release_date", item2.getRelease_date());
-                    getApplicationContext().startActivity(intent);
+                    return true;
                 }
             });
-            return view;
+
+                view.setTitle(item.getTitle());
+                view.setImage(item.getBitmap(), getApplicationContext());
+
+                movie_main_list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                        Intent intent = new Intent(getApplicationContext(), MovieDetailActivity.class);
+                        MovieListItem item2 = items.get(position);
+
+                        intent.putExtra("vote_count", item2.getVote_count());
+                        intent.putExtra("id", item2.getId());
+                        intent.putExtra("vote_average", item2.getVote_average());
+                        intent.putExtra("title", item2.getTitle());
+                        intent.putExtra("original_title", item2.getOriginal_title());
+                        intent.putExtra("bitmap", item2.getBitmap());
+                        intent.putExtra("original_language", item2.getOriginal_language());
+                        intent.putExtra("overview", item2.getOverview());
+                        intent.putExtra("release_date", item2.getRelease_date());
+                        getApplicationContext().startActivity(intent);
+                    }
+                });
+                return view;
+
+
+            //seen 이 1이되면 안보이게 하는 쿼리를 짜야한다.
         }
     }
 
     //영화 정보 가져오는 AsynkTask
-    class MovieTask extends AsyncTask<Void, Void, Void> {//1 doinbackground 2 onprogressupdate 3 postexcute
+    public class MovieTask extends AsyncTask<Void, Void, Void> {//1 doinbackground 2 onprogressupdate 3 postexcute
 
         ProgressDialog loadingDialog = new ProgressDialog(MainActivity.this);
 
@@ -424,7 +456,7 @@ public class MainActivity extends AppCompatActivity {
                 ApiInfo.requestQueue = Volley.newRequestQueue(getApplicationContext());
             }
             //requestMovieList2();
-            for (i1 = a1; b1 < 2; i1++) {
+            for (i1 = a1; b1 < 4; i1++) {
                 b1++;
                 a1++;
                 String url = "https://api.themoviedb.org/3/movie/upcoming?api_key=e331a939fea1530cdc641ac98d848eee&language=ko-KR";
@@ -452,6 +484,10 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+   /* public void similarMovie() {
+        String url = "http://api.themoviedb.org/3/discover/movie/" + id + "/similar" + ApiInfo.apikey + ApiInfo.language + ApiInfo.page;
+    }
+*/
 
     public void requestMovieList3(String url) {
         //https://api.themoviedb.org/3/movie/upcoming?api_key=e331a939fea1530cdc641ac98d848eee&language=ko-KR&page=1
@@ -506,6 +542,8 @@ public class MainActivity extends AppCompatActivity {
                 String original_title = movie_detail.getString("original_title");
 
                 final String img_url = "https://image.tmdb.org/t/p/w500/" + poster_path;
+                insertData(id, 0);
+                //db저장 하고 받아와서 어댑터에 저장
 
                 adapter.addItem(new MovieListItem(vote_count, id, vote_average, title, img_url, original_language, overview, release_date, original_title));//
                 adapter.notifyDataSetChanged();
@@ -517,6 +555,14 @@ public class MainActivity extends AppCompatActivity {
 
     public void println(String data) {
         textView.append(data + "\n");
+    }
+
+    public void insertData(int id, int seen) {
+        if (database != null) {
+            String sql = "insert into movie(id, seen) values(?,?)";
+            Object[] params = {id, seen};
+            database.execSQL(sql, params);
+        }
     }
     //textView 에 출력
 
