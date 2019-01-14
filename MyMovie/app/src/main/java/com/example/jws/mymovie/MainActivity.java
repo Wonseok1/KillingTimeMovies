@@ -93,12 +93,12 @@ public class MainActivity extends AppCompatActivity {
         movie_main_list.setAdapter(adapter);
         editText = findViewById(R.id.editText);
 
-/*
+
         String tableName = "movie";
         database = openOrCreateDatabase(tableName, MODE_PRIVATE, null);
-        database.execSQL("drop table movie"); //나중에 바꿔야돼
+        //database.execSQL("drop table movie"); //나중에 바꿔야돼
         database.execSQL("create table if not exists " + tableName + " (id integer, seen integer)");
-*/
+
 
         MovieTask task = new MovieTask();
         task.execute();
@@ -604,14 +604,16 @@ public class MainActivity extends AppCompatActivity {
                 //db저장 하고 받아와서 어댑터에 저장
 
                 Cursor cursor = database.rawQuery("select id, seen from movie where id ="+id , null);
-                //cursor.moveToNext();
-                //int cursorSeen = cursor.getInt(1);
+                cursor.moveToNext();
+                int cursorSeen = cursor.getInt(1);
 
-                /*if (cursorSeen == 0) {
-                }*/
+                if (cursorSeen == 0) {
+                    adapter.addItem(new MovieListItem(vote_count, id, vote_average, title, img_url, original_language, overview, release_date, original_title));//
+                    adapter.notifyDataSetChanged();
+                }
 
-                adapter.addItem(new MovieListItem(vote_count, id, vote_average, title, img_url, original_language, overview, release_date, original_title));//
-                adapter.notifyDataSetChanged();
+                /*adapter.addItem(new MovieListItem(vote_count, id, vote_average, title, img_url, original_language, overview, release_date, original_title));//
+                adapter.notifyDataSetChanged();*/
 
 
 
