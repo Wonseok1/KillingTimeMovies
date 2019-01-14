@@ -96,7 +96,7 @@ public class MainActivity extends AppCompatActivity {
 
         String tableName = "movie";
         database = openOrCreateDatabase(tableName, MODE_PRIVATE, null);
-        //database.execSQL("drop table movie"); //나중에 바꿔야돼
+        database.execSQL("drop table movie"); //나중에 바꿔야돼
         database.execSQL("create table if not exists " + tableName + " (id integer, seen integer)");
 
 
