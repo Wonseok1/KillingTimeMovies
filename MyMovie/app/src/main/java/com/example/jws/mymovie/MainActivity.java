@@ -71,6 +71,7 @@ public class MainActivity extends AppCompatActivity {
     Button btn_search;
     Button btn_killing;
     Button btn_popular;
+    Button btn_top_rating;
 
     MovieListAdapter adapter;
     GridView movie_main_list;
@@ -82,6 +83,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        Intent intent = new Intent(this, LoadingActivity.class);
+        startActivity(intent);
         MainActivity.context = getApplicationContext();
 
         movie_main_list = findViewById(R.id.movie_main_list);
@@ -164,7 +168,16 @@ public class MainActivity extends AppCompatActivity {
                     }
                 } else if (Movie_tab == 4) {
                     Toast.makeText(getApplicationContext(), "화제의 영화는 현재 언론의 화제가 되는 20개의 영화만 보여줍니다.", Toast.LENGTH_LONG).show();
+                } else if (Movie_tab==5) {
+                    b4=0;
+                    for (i4 = a4; b4 < 2; i4++) {
+                        b4++;
+                        a4++;
+                        String url = "https://api.themoviedb.org/3/movie/top_rated?"+ ApiInfo.apikey + ApiInfo.language + "&page="+i4;
+                        requestMovieList3(url);
+                    }
                 }
+
 
             }
         });
@@ -185,6 +198,7 @@ public class MainActivity extends AppCompatActivity {
                                 btn_latest.setBackgroundDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.btn_not_clicked));
                                 btn_search.setBackgroundDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.btn_not_clicked));
                                 btn_killing.setBackgroundDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.btn_not_clicked));
+                                btn_top_rating.setBackgroundDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.btn_not_clicked));
                             }
                         });
                     }
@@ -221,6 +235,7 @@ public class MainActivity extends AppCompatActivity {
                                 btn_latest.setBackgroundDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.btn_selected2));
                                 btn_search.setBackgroundDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.btn_not_clicked));
                                 btn_killing.setBackgroundDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.btn_not_clicked));
+                                btn_top_rating.setBackgroundDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.btn_not_clicked));
                             }
                         });
                     }
@@ -258,6 +273,7 @@ public class MainActivity extends AppCompatActivity {
                                 btn_latest.setBackgroundDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.btn_not_clicked));
                                 btn_search.setBackgroundDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.btn_selected2));
                                 btn_killing.setBackgroundDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.btn_not_clicked));
+                                btn_top_rating.setBackgroundDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.btn_not_clicked));
                             }
                         });
                     }
@@ -298,6 +314,7 @@ public class MainActivity extends AppCompatActivity {
                                 btn_search.setBackgroundDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.btn_not_clicked));
                                 btn_killing.setBackgroundDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.btn_selected2));
                                 btn_popular.setBackgroundDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.btn_not_clicked));
+                                btn_top_rating.setBackgroundDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.btn_not_clicked));
                             }
                         });
                     }
@@ -336,6 +353,7 @@ public class MainActivity extends AppCompatActivity {
                                 btn_search.setBackgroundDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.btn_not_clicked));
                                 btn_killing.setBackgroundDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.btn_not_clicked));
                                 btn_popular.setBackgroundDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.btn_selected2));
+                                btn_top_rating.setBackgroundDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.btn_not_clicked));
                             }
                         });
                     }
@@ -350,6 +368,45 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        btn_top_rating = findViewById(R.id.btn_top_rating);
+        btn_top_rating.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Movie_tab = 5;
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        handler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                btn_famous.setBackgroundDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.btn_not_clicked));
+                                btn_latest.setBackgroundDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.btn_not_clicked));
+                                btn_search.setBackgroundDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.btn_not_clicked));
+                                btn_killing.setBackgroundDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.btn_not_clicked));
+                                btn_popular.setBackgroundDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.btn_not_clicked));
+                                btn_top_rating.setBackgroundDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.btn_selected2));
+                            }
+                        });
+                    }
+                }).start();
+
+
+                adapter = new MovieListAdapter();
+                movie_main_list.setAdapter(adapter);
+
+                a4 = 1;
+                b4 = 0;
+
+                for (i4 = a4; b4 < 2; i4++) {
+                    b4++;
+                    a4++;
+                    String url = "https://api.themoviedb.org/3/movie/top_rated?"+ ApiInfo.apikey + ApiInfo.language + "&page="+i4;
+
+                    requestMovieList3(url);
+                }
+                //https://api.themoviedb.org/3/movie/top_rated?api_key=<<api_key>>&language=en-US&page=1
+            }
+        });
 
 
     }
@@ -397,8 +454,8 @@ public class MainActivity extends AppCompatActivity {
             movie_main_list.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
                 @Override
                 public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
-                    //MovieListItem item = items.get(i);
-                    //database.execSQL("update movie set seen=1 where id="+item.getId());
+                    MovieListItem item = items.get(i);
+                    database.execSQL("update movie set seen=1 where id="+item.getId());
                     items.remove(i);
                     adapter.notifyDataSetChanged();
 
@@ -526,6 +583,7 @@ public class MainActivity extends AppCompatActivity {
             //영화 검색결과 파싱
             JSONArray movie_info = new JSONArray(movie_list.toString());
 
+
             //api 출력 형식이 {[{ 이런 식이여서 객체안에 배열안에 객체를 다시 생성하는 식으로로
             for (int i = 0; i < total_pages; i++) {
                 //영화 상세정보 파싱
@@ -545,8 +603,18 @@ public class MainActivity extends AppCompatActivity {
                 insertData(id, 0);
                 //db저장 하고 받아와서 어댑터에 저장
 
+                Cursor cursor = database.rawQuery("select id, seen from movie where id ="+id , null);
+                //cursor.moveToNext();
+                //int cursorSeen = cursor.getInt(1);
+
+                /*if (cursorSeen == 0) {
+                }*/
+
                 adapter.addItem(new MovieListItem(vote_count, id, vote_average, title, img_url, original_language, overview, release_date, original_title));//
                 adapter.notifyDataSetChanged();
+
+
+
             }
 
         } catch (Exception e) {

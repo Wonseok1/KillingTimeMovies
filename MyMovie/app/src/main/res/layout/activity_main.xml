@@ -24,7 +24,7 @@
             android:id="@+id/btn_famous"
             android:layout_width="130dp"
             android:layout_height="wrap_content"
-            android:background="@drawable/notselected"
+            android:background="@drawable/btn_selected2"
             android:text="인기영화"
             android:textColor="#FFFFFF"
             android:textStyle="bold" />
@@ -57,11 +57,11 @@
             android:textStyle="bold" />
 
         <Button
-            android:id="@+id/btn_killing3"
+            android:id="@+id/btn_top_rating"
             android:layout_width="130dp"
             android:layout_height="wrap_content"
             android:background="@drawable/notselected"
-            android:text="뭐로하지"
+            android:text="명작영화"
             android:textColor="#FFFFFF"
             android:textStyle="bold" />
 
