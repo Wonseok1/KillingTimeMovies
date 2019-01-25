@@ -65,6 +65,15 @@
             android:textColor="#FFFFFF"
             android:textStyle="bold" />
 
+        <Button
+            android:id="@+id/btn_clean"
+            android:layout_width="130dp"
+            android:layout_height="wrap_content"
+            android:background="@drawable/notselected"
+            android:text="초기화"
+            android:textColor="#FFFFFF"
+            android:textStyle="bold" />
+
     </LinearLayout>
 
     </HorizontalScrollView>

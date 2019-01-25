@@ -96,7 +96,7 @@ public class MainActivity extends AppCompatActivity {
 
         String tableName = "movie";
         database = openOrCreateDatabase(tableName, MODE_PRIVATE, null);
-        //database.execSQL("drop table movie"); //나중에 바꿔야돼
+//        database.execSQL("drop table movie"); //나중에 바꿔야돼
         database.execSQL("create table if not exists " + tableName + " (id integer, seen integer)");
 
 
@@ -255,6 +255,17 @@ public class MainActivity extends AppCompatActivity {
                     url += ApiInfo.release_date_lte + ApiInfo.getTime + ApiInfo.sortdesc;
                     requestMovieList3(url);
                 }
+            }
+        });
+        Button btn_clean = findViewById(R.id.btn_clean);
+        btn_clean.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String tableName = "movie";
+                database = openOrCreateDatabase(tableName, MODE_PRIVATE, null);
+                database.execSQL("drop table movie"); //나중에 바꿔야돼
+                database.execSQL("create table if not exists " + tableName + " (id integer, seen integer)");
+
             }
         });
 
