@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/ApiEx.iml" filepath="$PROJECT_DIR$/ApiEx.iml" />
+      <module fileurl="file://C:\KillingTimeMovies-9b05eb1b5055abd013d21c7de8a624bcae4dab71\ApiEx\ApiEx.iml" filepath="C:\KillingTimeMovies-9b05eb1b5055abd013d21c7de8a624bcae4dab71\ApiEx\ApiEx.iml" />
+      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://C:\KillingTimeMovies-9b05eb1b5055abd013d21c7de8a624bcae4dab71\ApiEx\app\app.iml" filepath="C:\KillingTimeMovies-9b05eb1b5055abd013d21c7de8a624bcae4dab71\ApiEx\app\app.iml" />
+    </modules>
+  </component>
+</project>
