@@ -188,9 +188,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Movie_tab = 1;
 
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
+
                         handler.post(new Runnable() {
                             @Override
                             public void run() {
@@ -201,8 +199,7 @@ public class MainActivity extends AppCompatActivity {
                                 btn_top_rating.setBackgroundDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.btn_not_clicked));
                             }
                         });
-                    }
-                }).start();
+
 
                 //어댑터 목록 삭제제
                 adapter = new MovieListAdapter();
@@ -225,21 +222,17 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                new Thread(new Runnable() {
+                handler.post(new Runnable() {
                     @Override
                     public void run() {
-                        handler.post(new Runnable() {
-                            @Override
-                            public void run() {
                                 btn_famous.setBackgroundDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.btn_not_clicked));
                                 btn_latest.setBackgroundDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.btn_selected2));
                                 btn_search.setBackgroundDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.btn_not_clicked));
                                 btn_killing.setBackgroundDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.btn_not_clicked));
                                 btn_top_rating.setBackgroundDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.btn_not_clicked));
-                            }
-                        });
+
                     }
-                }).start();
+                });
 
                 Movie_tab = 0;
                 adapter = new MovieListAdapter();
@@ -274,21 +267,17 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                new Thread(new Runnable() {
+                handler.post(new Runnable() {
                     @Override
                     public void run() {
-                        handler.post(new Runnable() {
-                            @Override
-                            public void run() {
+
                                 btn_famous.setBackgroundDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.btn_not_clicked));
                                 btn_latest.setBackgroundDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.btn_not_clicked));
                                 btn_search.setBackgroundDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.btn_selected2));
                                 btn_killing.setBackgroundDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.btn_not_clicked));
                                 btn_top_rating.setBackgroundDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.btn_not_clicked));
-                            }
-                        });
                     }
-                }).start();
+                });
 
                 adapter = new MovieListAdapter();
                 movie_main_list.setAdapter(adapter);
@@ -314,9 +303,8 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
 
                 Movie_tab = 3;
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
+
+
                         handler.post(new Runnable() {
                             @Override
                             public void run() {
@@ -328,8 +316,7 @@ public class MainActivity extends AppCompatActivity {
                                 btn_top_rating.setBackgroundDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.btn_not_clicked));
                             }
                         });
-                    }
-                }).start();
+
 
                 adapter = new MovieListAdapter();
                 movie_main_list.setAdapter(adapter);
@@ -353,9 +340,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
 
                 Movie_tab = 4;
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
+
                         handler.post(new Runnable() {
                             @Override
                             public void run() {
@@ -367,8 +352,7 @@ public class MainActivity extends AppCompatActivity {
                                 btn_top_rating.setBackgroundDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.btn_not_clicked));
                             }
                         });
-                    }
-                }).start();
+
 
                 adapter = new MovieListAdapter();
                 movie_main_list.setAdapter(adapter);
@@ -384,9 +368,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Movie_tab = 5;
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
+
                         handler.post(new Runnable() {
                             @Override
                             public void run() {
@@ -398,8 +380,7 @@ public class MainActivity extends AppCompatActivity {
                                 btn_top_rating.setBackgroundDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.btn_selected2));
                             }
                         });
-                    }
-                }).start();
+
 
 
                 adapter = new MovieListAdapter();
