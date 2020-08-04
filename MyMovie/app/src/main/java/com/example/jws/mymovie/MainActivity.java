@@ -501,7 +501,7 @@ public class MainActivity extends AppCompatActivity {
                                 requestMovieList3(url);
                             }
                         } else if (Movie_tab == 4) {
-                            Toast.makeText(getApplicationContext(), "화제의 영화는 현재 언론의 화제가 되는 20개의 영화만 보여줍니다.", Toast.LENGTH_LONG).show();
+
                         } else if (Movie_tab==5) {
                             b4=0;
                             for (i4 = a4; b4 < 2; i4++) {
