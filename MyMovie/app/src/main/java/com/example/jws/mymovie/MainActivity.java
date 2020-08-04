@@ -15,6 +15,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
@@ -106,8 +107,9 @@ public class MainActivity extends AppCompatActivity {
 
         final Handler handler = new Handler();
 
+
         //textView = findViewById(R.id.textView);
-        final Button button = findViewById(R.id.button);
+        /*final Button button = findViewById(R.id.button);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -180,7 +182,7 @@ public class MainActivity extends AppCompatActivity {
 
 
             }
-        });
+        });*/
 
         btn_famous = findViewById(R.id.btn_famous);
         btn_famous.setOnClickListener(new View.OnClickListener() {
@@ -406,7 +408,7 @@ public class MainActivity extends AppCompatActivity {
     class MovieListAdapter extends BaseAdapter {
 
         ArrayList<MovieListItem> items = new ArrayList<MovieListItem>();
-
+        boolean itemVisibleFlag = false;
         @Override
         public int getCount() {
             return items.size();
@@ -442,6 +444,83 @@ public class MainActivity extends AppCompatActivity {
             cursor.moveToNext();
             int id = cursor.getInt(0);
             int cursorSeen = cursor.getInt(1);*/
+
+            movie_main_list.setOnScrollListener(new AbsListView.OnScrollListener() {
+                @Override
+                public void onScrollStateChanged(AbsListView absListView, int i) {
+                    if (itemVisibleFlag) {
+                        b = 0;
+
+                        if (ApiInfo.requestQueue == null) {//requestQueue 생성
+                            ApiInfo.requestQueue = Volley.newRequestQueue(getApplicationContext());
+                        }
+
+                        if (Movie_tab == 0) {
+                            //requestMovieList();
+
+                            for (i = a; b < 2; i++) {
+                                b++;
+                                a++;
+                                String url = ApiInfo.host + ApiInfo.apikey + ApiInfo.language;
+                                url += "&page=" + i;
+                                url += ApiInfo.release_date_lte + ApiInfo.getTime + ApiInfo.sortdesc;
+                                requestMovieList3(url);
+                            }
+
+                        } else if (Movie_tab == 1) {
+                            b1 = 0;
+                            //requestMovieList2();
+
+                            for (i1 = a1; b1 < 2; i1++) {
+                                b1++;
+                                a1++;
+                                String url = "https://api.themoviedb.org/3/movie/upcoming?api_key=e331a939fea1530cdc641ac98d848eee&language=ko-KR";
+                                url += "&page=" + i1;
+                                requestMovieList3(url);
+                            }
+                        } else if (Movie_tab == 2) {
+                            b2 = 0;
+                            for (i2 = a2; b2 < 2; i2++) {
+                                b2++;
+                                a2++;
+                                String search;
+                                search = editText.getText().toString();
+                                String url = "https://api.themoviedb.org/3/search/movie?api_key=e331a939fea1530cdc641ac98d848eee&query=" + search;
+                                url += "&language=ko-KR&page=" + i2;
+
+                                requestMovieList3(url);
+                            }
+                        } else if (Movie_tab == 3) {
+                            b3 = 0;
+                            for (i3 = a3; b3 < 2; i3++) {
+                                b3++;
+                                a3++;
+                                String url = ApiInfo.host + ApiInfo.apikey + ApiInfo.language;
+                                url += "&page=" + i3;
+                                url += ApiInfo.release_date_lte + ApiInfo.getTime3Month + ApiInfo.sortdesc;
+                                requestMovieList3(url);
+                            }
+                        } else if (Movie_tab == 4) {
+                            Toast.makeText(getApplicationContext(), "화제의 영화는 현재 언론의 화제가 되는 20개의 영화만 보여줍니다.", Toast.LENGTH_LONG).show();
+                        } else if (Movie_tab==5) {
+                            b4=0;
+                            for (i4 = a4; b4 < 2; i4++) {
+                                b4++;
+                                a4++;
+                                String url = "https://api.themoviedb.org/3/movie/top_rated?"+ ApiInfo.apikey + ApiInfo.language + "&page="+i4;
+                                requestMovieList3(url);
+                            }
+                        }
+                    }
+                }
+
+                @Override
+                public void onScroll(AbsListView absListView, int firstItem, int visibleItemCount, int totalItemCount) {
+                    itemVisibleFlag = (totalItemCount > 0) && (firstItem + visibleItemCount +6 >= totalItemCount);
+                }
+            });
+
+
 
             movie_main_list.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
                 @Override

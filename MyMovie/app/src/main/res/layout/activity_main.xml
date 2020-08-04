@@ -105,7 +105,7 @@
             android:hint="검색할 영화제목을 입력하세요"
             android:layout_width="match_parent"
             android:textColor="#FFFFFFFF"
-            android:layout_weight="2"
+            android:layout_weight="1"
             android:layout_height="wrap_content" />
         <Button
             android:id="@+id/btn_search"
@@ -117,15 +117,7 @@
             android:background="@drawable/btn_not_clicked"
             android:text="검색"/>
 
-        <Button
-            android:id="@+id/button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="3"
-            android:textColor="#FFFFFF"
-            android:textStyle="bold"
-            android:background="@drawable/btn_not_clicked"
-            android:text="추가" />
+
     </LinearLayout>
 
 
